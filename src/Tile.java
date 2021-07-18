@@ -1,24 +1,18 @@
 package src;
 
 public class Tile {
-  public boolean isBomb;
   public boolean isFlagged;
   public boolean isOpen;
   public int[] coords;
 
-  public Tile(boolean isBomb, int[] coords) {
-    this.isBomb = isBomb;
+  public Tile(int[] coords) {
     this.coords = coords;
     this.isFlagged = false;
     this.isOpen = false;
   }
 
   public void open() {
-    if (this.isBomb) {
-      Game.GameOver();
-    } else {
-      this.isOpen = true;
-    }
+    if (!this.isFlagged) this.isOpen = true;
   }
 
   public void toggleFlag() {
@@ -27,7 +21,10 @@ public class Tile {
 
 
   // TODO Pattern to fit grid
-  public String toString() {
-    return "This tile is " + (!this.isBomb ? "not " : "") + "a bomb, and " + (!this.isFlagged ? "not " : "") + "flagged.";
-  }  
+  public String toString(int adjacentBombs) {
+    // return String.format("This tile is at: (%d, %d)", this.coords[0], this.coords[1]);
+    return this.isFlagged
+      ? "F"
+      : Integer.toString(adjacentBombs);
+  }
 }

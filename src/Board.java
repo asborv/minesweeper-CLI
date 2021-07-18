@@ -12,11 +12,14 @@ public class Board {
     Random rd = new Random();
 
     // Initialize tiles with random value for isBomb
-    // TODO Balance, is now 50%?
     for (int y=0; y<width; y++) {
       for (int x=0; x<width; x++) {
         int[] coords = {x, y};
-        this.board[y][x] = new Tile(rd.nextBoolean(), coords);
+
+        // TODO Balance, is now 50%?
+        this.board[y][x] = rd.nextBoolean()
+          ? new Tile(coords)
+          : new Bomb(coords);
       }
     }
   }
@@ -32,7 +35,7 @@ public class Board {
         
         // Increment adjacent bombs
         try {
-          if (this.board[y][x].isBomb) nBombs++;
+          if (this.board[y][x] instanceof Bomb) nBombs++;
         } catch (ArrayIndexOutOfBoundsException e) {
           // Left empty; index out of bounds is a tile outside the board
         }
