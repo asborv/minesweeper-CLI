@@ -6,6 +6,6 @@ public class Game {
     System.out.println("Game over");
   }
   public static void main(String[] args) {
-    
+    Board b = new Board(5, 5);
   }
 }
