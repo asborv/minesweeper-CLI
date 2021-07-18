@@ -2,9 +2,12 @@ package src;
 import java.util.Random;
 
 public class Board {
+  int width, height;
   Tile[][] board;
 
   Board(int width, int height) {
+    this.width = width;
+    this.height = height;
     this.board = new Tile[width][height];
     Random rd = new Random();
 
