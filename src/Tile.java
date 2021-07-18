@@ -5,9 +5,9 @@ public class Tile {
   public boolean isFlagged;
   public boolean isOpen;
 
-  public Tile(boolean isBomb, boolean isFlagged) {
+  public Tile(boolean isBomb) {
     this.isBomb = isBomb;
-    this.isFlagged = isFlagged;
+    this.isFlagged = false;
     this.isOpen = false;
   }
 
