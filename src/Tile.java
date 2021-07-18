@@ -13,6 +13,7 @@ public class Tile {
     this.isOpen = false;
   }
 
+  // TODO Open all adjacents if none are bombs
   public void open() {
     if (!this.isFlagged) this.isOpen = true;
   }
@@ -21,12 +22,9 @@ public class Tile {
     if (!this.isOpen) this.isFlagged = !this.isFlagged;
   }
 
-
-  // TODO Pattern to fit grid
   public String toString() {
-    // return String.format("This tile is at: (%d, %d)", this.coords[0], this.coords[1]);
     return this.isFlagged
       ? "F"
-      : Integer.toString(this.adjacentBombs);
+      : (this.isOpen ? Integer.toString(this.adjacentBombs) : " ");
   }
 }

@@ -9,11 +9,11 @@ public class Board {
     this.width = width;
     this.height = height;
     this.board = new Tile[width][height];
-    Random rd = new Random();
-
+    
     // Complete bombMap before Tile initialization such that getAdjacentBombs works correctly
     // TODO Inline/map?
     boolean[][] bombMap = new boolean[width][height];
+    Random rd = new Random();
     for (int y=0; y<width; y++) {
       for (int x=0; x<width; x++) {
         bombMap[y][x] = rd.nextBoolean();
@@ -26,13 +26,10 @@ public class Board {
         int[] coords = {x, y};
 
         this.board[y][x] = bombMap[y][x]
-          ? new Bomb(new int[] {x, y})
+          ? new Bomb(coords)
           : new Tile(coords, this.getAdjacentBombs(coords));
       }
-    }
-
-
-
+    } 
   }
 
   
@@ -56,16 +53,23 @@ public class Board {
     return nBombs;
   }
 
-  // TODO Pattern to fit grid
   public String toString() {
-    String s = "";
+    String str = "";
+    String horizontal = "\n+" + "-+".repeat(width) + "\n";
 
     for (Tile[] row: this.board) {
+      // Left edge
+      str += horizontal + "|";
+
+      // Cells + right edge
       for (Tile tile: row) {
-        s += tile.toString() + "\n";
+        str += tile.toString() + "|";
       }
-      s += "\n\n\n";
     }
-    return s;
+
+    // Bottom edge
+    str += horizontal;
+
+    return str;
   }
 }

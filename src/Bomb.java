@@ -14,10 +14,8 @@ public class Bomb extends Tile {
 
   @Override
   public String toString() {
-    // return String.format("This is a bomb at: (%d, %d)", this.coords[0], this.coords[1]);
     return this.isFlagged
       ? "F"
-      : "B";
+      : " ";
   }
-  
 }
