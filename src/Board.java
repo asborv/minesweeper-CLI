@@ -11,17 +11,28 @@ public class Board {
     this.board = new Tile[width][height];
     Random rd = new Random();
 
+    // Complete bombMap before Tile initialization such that getAdjacentBombs works correctly
+    // TODO Inline/map?
+    boolean[][] bombMap = new boolean[width][height];
+    for (int y=0; y<width; y++) {
+      for (int x=0; x<width; x++) {
+        bombMap[y][x] = rd.nextBoolean();
+      }
+    }
+    
     // Initialize tiles with random value for isBomb
     for (int y=0; y<width; y++) {
       for (int x=0; x<width; x++) {
         int[] coords = {x, y};
 
-        // TODO Balance, is now 50%?
-        this.board[y][x] = rd.nextBoolean()
-          ? new Tile(coords)
-          : new Bomb(coords);
+        this.board[y][x] = bombMap[y][x]
+          ? new Bomb(new int[] {x, y})
+          : new Tile(coords, this.getAdjacentBombs(coords));
       }
     }
+
+
+
   }
 
   

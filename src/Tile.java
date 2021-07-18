@@ -1,11 +1,13 @@
 package src;
 
 public class Tile {
+  public int adjacentBombs = 0;
   public boolean isFlagged;
   public boolean isOpen;
   public int[] coords;
 
-  public Tile(int[] coords) {
+  public Tile(int[] coords, int adjacentBombs) {
+    this.adjacentBombs = adjacentBombs;
     this.coords = coords;
     this.isFlagged = false;
     this.isOpen = false;
@@ -21,10 +23,10 @@ public class Tile {
 
 
   // TODO Pattern to fit grid
-  public String toString(int adjacentBombs) {
+  public String toString() {
     // return String.format("This tile is at: (%d, %d)", this.coords[0], this.coords[1]);
     return this.isFlagged
       ? "F"
-      : Integer.toString(adjacentBombs);
+      : Integer.toString(this.adjacentBombs);
   }
 }
