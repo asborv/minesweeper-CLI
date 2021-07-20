@@ -14,8 +14,9 @@ public class Tile {
   }
 
   // TODO Open all adjacents if none are bombs
-  public void open() {
+  public int open() {
     if (!this.isFlagged) this.isOpen = true;
+    return this.adjacentBombs;
   }
 
   public void toggleFlag() {

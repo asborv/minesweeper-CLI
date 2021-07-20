@@ -8,8 +8,12 @@ public class Bomb extends Tile {
   }
 
   @Override
-  public void open() {
-    Game.GameOver();
+  /**
+   * Return code 9 is impossible for Tile,
+   * signifies bomb
+   */
+  public int open() {
+    return 9;
   }
 
   @Override

@@ -3,63 +3,110 @@ import java.util.Scanner;
 import java.util.Arrays;
 
 public class Game {
-  
-  public static void GameOver() {
-    System.out.println("Game over");
+  boolean gameOver = false;
+
+  // TODO Abstract to several functions, each to do ONE thing
+  /**
+   * Prompt, validate and format user input
+   * @return Array of user commands OR empty array for invalid input
+   */
+  public String[] formatInput() {
+    boolean invalidInput;
+    Scanner scanner = new Scanner(System.in);
+
+    // Propmpt
+    System.out.print(">>> ");
+    String str = scanner.nextLine();
+    scanner.close();
+    
+    // Input string to array by spaces & commas
+    String[] inputArr = str.split("( |,)+");
+
+    // Invalid lengths and flag syntax
+    invalidInput = inputArr.length < 2 ||
+                   inputArr.length > 3 ||
+                   inputArr.length == 3 && !inputArr[0].equalsIgnoreCase("flag");
+    
+    // Empty String[] signifies invalid input
+    return invalidInput
+      ? new String[] {}
+      : inputArr;
   }
 
-  public static void main(String[] args) {
+  /**
+   * Flag or open, based on user input
+   * @param inputArr Formatted input
+   * @return Tile should be flagged
+   */
+  public boolean getFlag(String[] inputArr) {
+    return inputArr.length == 3 &&
+           inputArr[0].toLowerCase().equals("flag");
+  }
 
-    // link https://stackoverflow.com/questions/15613626/scanner-is-never-closed
-    try (Scanner scanner = new Scanner(System.in)) {
-      Board b = new Board(5, 5);
-  
-      System.out.print(">>> ");
-      String str = scanner.nextLine();
+  /**
+   * Validates and casts string coordinates to ints
+   * @param inputArr Formatted user input
+   * @param flag Should tile be flagged
+   * @return Array of int coordinates OR empty array for invalid input
+   */
+  public int[] getCoords(String[] inputArr, boolean flag) {
+    try {
+      // Cut off first element if flag
+      String[] strCoords = flag
+      ? Arrays.copyOfRange(inputArr, 1, 3)
+      : inputArr;
       
+      // Cast String[] to int[]
+      return Arrays.stream(strCoords)
+        .mapToInt(Integer::parseInt)
+        .toArray();
+    } catch (Exception e) {
+      // Empty Array signifies invalid input
+      return new int[] {};
+    }
+  }
   
-      String[] strCoords;
-      int[] coords;
-      boolean flag = false;
-      
-      // Split by spaces and commas
-      String[] inputArr = str.split("( |,)+");
-  
-      try {
-  
-        // Correct format for flag
-        if (inputArr.length == 3 && inputArr[0].toLowerCase().equals("flag")) {
-          strCoords = Arrays.copyOfRange(inputArr, 1, 3);
-          flag = true;
-  
-        // Correct format for open
-        } else if (inputArr.length == 2) {
-            strCoords = inputArr;
-        
-        // Incorrect format
-        // ? Remove try/catch - print error here
-        } else {
-          throw new Exception("Invalid input.\nProvide two integer coordinates, and prepend with 'flag' if you want to flag the tile.");
-        }
-      } catch (Exception e) {
-        System.err.println(e.getMessage());
-        //! REMOVE - continue when loop is implemented
-        strCoords = new String[] {"2", "2"};
-      }
-  
-      // Parse coordinates to ints
-      coords = Arrays.stream(strCoords)
-                .mapToInt(Integer::parseInt)
-                .toArray();
-      
-      if (flag) {
-        b.board[coords[0]][coords[1]].toggleFlag();
-      } else {
-        b.board[coords[0]][coords[1]].open();
-      }
-  
-      System.out.println(b);
+  /**
+   * Complete turn: user input -> validation -> action 
+   * @param b Ref. to current board, such that we can open/flag tiles on it
+   */
+  public void turn(Board b) {
+    String[] inputArr = this.formatInput();
+    boolean flag = this.getFlag(inputArr);
+    int[] coords = this.getCoords(inputArr, flag);
+    Tile tile = b.board[coords[0]][coords[1]];
+
+    // Invalid: avoid start over from user input
+    if (coords.length == 0 || inputArr.length == 0) {
+      System.err.println("INVALID INPUT");
+      return;
     }
 
+    if (flag) {
+      tile.toggleFlag();
+    } else {
+      // 9 is a special case for bomb: see Bomb.open()
+      int adjacentBombs = tile.open();
+
+      if (adjacentBombs == 0) {
+        // TODO open all adjacents
+      } else if (adjacentBombs == 9) {
+        this.gameOver = true;
+      }
+    }
+
+    System.out.println(b);
+  }
+
+  // TODO Board constructor from args
+  public static void main(String[] args) {
+    Board b = new Board(5, 5);
+    Game game = new Game();
+
+    while (!game.gameOver) {
+      game.turn(b);
+    }
+    // TODO Print entire board open
+    System.out.println("Game over");
   }
 }
