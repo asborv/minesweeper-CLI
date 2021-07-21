@@ -4,6 +4,7 @@ import java.util.Random;
 public class Board {
   int width, height;
   Tile[][] board;
+  boolean[][] bombMap;
 
   Board(int width, int height) {
     this.width = width;
@@ -12,11 +13,11 @@ public class Board {
     
     // Complete bombMap before Tile initialization such that getAdjacentBombs works correctly
     // TODO Inline/map?
-    boolean[][] bombMap = new boolean[width][height];
+    this.bombMap = new boolean[width][height];
     Random rd = new Random();
     for (int y=0; y<width; y++) {
       for (int x=0; x<width; x++) {
-        bombMap[y][x] = rd.nextBoolean();
+        this.bombMap[y][x] = rd.nextBoolean();
       }
     }
     
@@ -36,14 +37,15 @@ public class Board {
   public int getAdjacentBombs(int[] coords) {
     int nBombs = 0;
 
-    for (int x=coords[0]-1; x<=coords[0]+1; x++) {
-      for (int y=coords[1]-1; y<=coords[1]+1; y++) {
+    for (int y=coords[1]-1; y<=coords[1]+1; y++) {
+      for (int x=coords[0]-1; x<=coords[0]+1; x++) {
+
         // The opened tile should not be checked
         if (x == coords[0] && y == coords[1]) continue;
         
         // Increment adjacent bombs
         try {
-          if (this.board[y][x] instanceof Bomb) nBombs++;
+          if (this.bombMap[y][x]) nBombs++;
         } catch (ArrayIndexOutOfBoundsException e) {
           // Left empty; index out of bounds is a tile outside the board
         }
