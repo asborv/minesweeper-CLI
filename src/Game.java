@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public class Game {
   boolean gameOver = false;
+  Scanner scanner = new Scanner(System.in);
 
   // TODO Abstract to several functions, each to do ONE thing
   /**
@@ -12,12 +13,10 @@ public class Game {
    */
   public String[] formatInput() {
     boolean invalidInput;
-    Scanner scanner = new Scanner(System.in);
 
     // Propmpt
     System.out.print(">>> ");
-    String str = scanner.nextLine();
-    scanner.close();
+    String str = this.scanner.nextLine();
     
     // Input string to array by spaces & commas
     String[] inputArr = str.split("( |,)+");
@@ -106,6 +105,8 @@ public class Game {
     while (!game.gameOver) {
       game.turn(b);
     }
+
+    game.scanner.close();
     // TODO Print entire board open
     System.out.println("Game over");
   }
