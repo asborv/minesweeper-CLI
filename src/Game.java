@@ -7,13 +7,12 @@ public class Game {
   Scanner scanner = new Scanner(System.in);
 
   // TODO Abstract to several functions, each to do ONE thing
+  // TODO Exception handling on malformed inputs
   /**
    * Prompt, validate and format user input
    * @return Array of user commands OR empty array for invalid input
    */
   public String[] formatInput() {
-    boolean invalidInput;
-
     // Propmpt
     System.out.print(">>> ");
     String str = this.scanner.nextLine();
@@ -22,9 +21,9 @@ public class Game {
     String[] inputArr = str.split("( |,)+");
 
     // Invalid lengths and flag syntax
-    invalidInput = inputArr.length < 2 ||
-                   inputArr.length > 3 ||
-                   inputArr.length == 3 && !inputArr[0].equalsIgnoreCase("flag");
+    boolean invalidInput = inputArr.length < 2 ||
+                           inputArr.length > 3 ||
+                           inputArr.length == 3 && !inputArr[0].equalsIgnoreCase("flag");
     
     // Empty String[] signifies invalid input
     return invalidInput
@@ -52,8 +51,8 @@ public class Game {
     try {
       // Cut off first element if flag
       String[] strCoords = flag
-      ? Arrays.copyOfRange(inputArr, 1, 3)
-      : inputArr;
+        ? Arrays.copyOfRange(inputArr, 1, 3)
+        : inputArr;
       
       // Cast String[] to int[]
       return Arrays.stream(strCoords)
@@ -64,7 +63,8 @@ public class Game {
       return new int[] {};
     }
   }
-  
+
+  // TODO Check win criteria
   /**
    * Complete turn: user input -> validation -> action 
    * @param b Ref. to current board, such that we can open/flag tiles on it
@@ -73,7 +73,7 @@ public class Game {
     String[] inputArr = this.formatInput();
     boolean flag = this.getFlag(inputArr);
     int[] coords = this.getCoords(inputArr, flag);
-    Tile tile = b.board[coords[0]][coords[1]];
+    Tile tile = b.board[coords[1]][coords[0]];
 
     // Invalid: avoid start over from user input
     if (coords.length == 0 || inputArr.length == 0) {
@@ -84,11 +84,15 @@ public class Game {
     if (flag) {
       tile.toggleFlag();
     } else {
-      // 9 is a special case for bomb: see Bomb.open()
+      // 9 is a special case for bomb: see Bomb constructor
       int adjacentBombs = tile.open();
 
+      // Opens all adjacent when none are bombs
+      // NOTE: Does not propagate to adjacent 0-tiles
       if (adjacentBombs == 0) {
-        // TODO open all adjacents
+        for (int[] safeCoords : b.getAdjacentCoords(coords)) {
+          b.board[safeCoords[1]][safeCoords[0]].open();
+        }
       } else if (adjacentBombs == 9) {
         this.gameOver = true;
       }

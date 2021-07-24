@@ -1,5 +1,6 @@
 package src;
 import java.util.Random;
+import java.util.ArrayList;
 
 public class Board {
   int width, height;
@@ -17,13 +18,13 @@ public class Board {
     Random rd = new Random();
     for (int y=0; y<width; y++) {
       for (int x=0; x<width; x++) {
-        this.bombMap[y][x] = rd.nextBoolean();
+        this.bombMap[y][x] = rd.nextDouble() > .9;
       }
     }
     
     // Initialize tiles with random value for isBomb
-    for (int y=0; y<width; y++) {
-      for (int x=0; x<width; x++) {
+    for (int y=0; y<this.height; y++) {
+      for (int x=0; x<this.width; x++) {
         int[] coords = {x, y};
 
         this.board[y][x] = bombMap[y][x]
@@ -33,9 +34,8 @@ public class Board {
     } 
   }
 
-  
-  public int getAdjacentBombs(int[] coords) {
-    int nBombs = 0;
+  public int[][] getAdjacentCoords(int[] coords) {
+    ArrayList<int[]> adjacents = new ArrayList<int[]>();
 
     for (int y=coords[1]-1; y<=coords[1]+1; y++) {
       for (int x=coords[0]-1; x<=coords[0]+1; x++) {
@@ -43,13 +43,25 @@ public class Board {
         // The opened tile should not be checked
         if (x == coords[0] && y == coords[1]) continue;
         
-        // Increment adjacent bombs
+        // Adds all adjacents
+        // Throws where Tile outside board
         try {
-          if (this.bombMap[y][x]) nBombs++;
+          Tile throwIfIndexOutOfBounds = this.board[y][x];
+          adjacents.add(new int[] {x, y});
         } catch (ArrayIndexOutOfBoundsException e) {
           // Left empty; index out of bounds is a tile outside the board
         }
       }
+    }
+
+    return adjacents.toArray(new int[][]{});
+  }
+  
+  public int getAdjacentBombs(int[] coords) {
+    int nBombs = 0;
+
+    for (int[] adjacentCoords : this.getAdjacentCoords(coords)) {
+      if (this.bombMap[adjacentCoords[1]][adjacentCoords[0]]) nBombs++;
     }
 
     return nBombs;
