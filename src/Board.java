@@ -1,27 +1,34 @@
 package src;
 import java.util.Random;
+import java.util.function.DoubleFunction;
 import java.util.ArrayList;
 
 public class Board {
   int width, height;
   Tile[][] board;
-  boolean[][] bombMap;
+  Boolean[][] bombMap;
 
   Board(int width, int height) {
     this.width = width;
     this.height = height;
-    this.board = new Tile[width][height];
+    this.board = new Tile[height][width];
     
     // Complete bombMap before Tile initialization such that getAdjacentBombs works correctly
-    // TODO Inline/map?
-    this.bombMap = new boolean[width][height];
-    Random rd = new Random();
-    for (int y=0; y<width; y++) {
-      for (int x=0; x<width; x++) {
-        this.bombMap[y][x] = rd.nextDouble() > .9;
-      }
-    }
     
+    // width has no effect as rows as reassigned later - left for readibility
+    this.bombMap = new Boolean[height][width];
+    Random rd = new Random();
+    DoubleFunction<Boolean> bombIfGreater = x -> x > .9;
+
+    for (int y=0; y<this.height; y++) {
+      // row with random doubles - mapped to true/false if bigger than threshold
+      Boolean[] row = rd.doubles(width)
+        .mapToObj(bombIfGreater)
+        .toArray(Boolean[]::new);
+        
+      this.bombMap[y] = row;
+    }
+
     // Initialize tiles with random value for isBomb
     for (int y=0; y<this.height; y++) {
       for (int x=0; x<this.width; x++) {
@@ -46,6 +53,7 @@ public class Board {
         // Adds all adjacents
         // Throws where Tile outside board
         try {
+          // TODO Better way of testing without unused variable?
           Tile throwIfIndexOutOfBounds = this.board[y][x];
           adjacents.add(new int[] {x, y});
         } catch (ArrayIndexOutOfBoundsException e) {
