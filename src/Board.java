@@ -41,8 +41,8 @@ public class Board {
     } 
   }
 
-  public int[][] getAdjacentCoords(Point p) {
-    ArrayList<int[]> adjacents = new ArrayList<int[]>();
+  public Point[] getAdjacentCoords(Point p) {
+    ArrayList<Point> adjacents = new ArrayList<Point>();
 
     for (int y=p.getY()-1; y<=p.getY()+1; y++) {
       for (int x=p.getX()-1; x<=p.getX()+1; x++) {
@@ -54,21 +54,21 @@ public class Board {
         // Throws where Tile outside board
         try {
           Tile validTile = this.board[y][x];
-          adjacents.add(new int[] {x, y});
+          adjacents.add(new Point(x, y));
         } catch (ArrayIndexOutOfBoundsException e) {
           // Left empty; index out of bounds is a tile outside the board
         }
       }
     }
 
-    return adjacents.toArray(int[][]::new);
+    return adjacents.toArray(Point[]::new);
   }
   
   public int getAdjacentBombs(Point p) {
     int nBombs = 0;
 
-    for (int[] adjacentCoords : this.getAdjacentCoords(p)) {
-      if (this.bombMap[adjacentCoords[1]][adjacentCoords[0]]) nBombs++;
+    for (Point adjacentCoords : this.getAdjacentCoords(p)) {
+      if (this.bombMap[adjacentCoords.getY()][adjacentCoords.getX()]) nBombs++;
     }
 
     return nBombs;

@@ -131,8 +131,8 @@ public class Game {
         // Opens all adjacent when none are bombs
         // TODO: Does not propagate to adjacent 0-tiles
         if (adjacentBombs == 0) {
-          for (int[] safeCoords : b.getAdjacentCoords(p)) {
-            b.board[safeCoords[1]][safeCoords[0]].open();
+          for (Point safeCoords : b.getAdjacentCoords(p)) {
+            b.board[safeCoords.getY()][safeCoords.getX()].open();
           }
         } else if (tile instanceof Bomb) {
           this.gameOver = true;
