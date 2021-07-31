@@ -53,8 +53,7 @@ public class Board {
         // Adds all adjacents
         // Throws where Tile outside board
         try {
-          // TODO Better way of testing without unused variable?
-          Tile throwIfIndexOutOfBounds = this.board[y][x];
+          Tile validTile = this.board[y][x];
           adjacents.add(new int[] {x, y});
         } catch (ArrayIndexOutOfBoundsException e) {
           // Left empty; index out of bounds is a tile outside the board
@@ -62,7 +61,7 @@ public class Board {
       }
     }
 
-    return adjacents.toArray(new int[][]{});
+    return adjacents.toArray(int[][]::new);
   }
   
   public int getAdjacentBombs(int[] coords) {
