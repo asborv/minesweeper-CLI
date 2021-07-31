@@ -6,24 +6,38 @@ public class Game {
   boolean gameOver = false;
   Scanner scanner = new Scanner(System.in);
 
-  // TODO Abstract to several functions, each to do ONE thing
-  // TODO Exception handling on malformed inputs
+  /**
+   * Prompt user for input
+   * @return User input as String
+   */
+  public String userInput() {
+    System.out.print(">>> ");
+    String str = this.scanner.nextLine();
+
+    return str;
+  }
+
+  /**
+   * Check if input length and flag syntax is valid
+   * @param inputArr User input split to substrings
+   * @return true if input is invalid, otherwise false
+   */
+  public boolean validateInput(String[] inputArr) {
+    // Invalid lengths and flag syntax
+    return  inputArr.length < 2 ||
+            inputArr.length > 3 ||
+            inputArr.length == 3 && !inputArr[0].equalsIgnoreCase("flag");
+  }
+
   /**
    * Prompt, validate and format user input
    * @return Array of user commands OR empty array for invalid input
    */
-  public String[] formatInput() {
-    // Propmpt
-    System.out.print(">>> ");
-    String str = this.scanner.nextLine();
+  public String[] getUserCommand() {
     
-    // Input string to array by spaces & commas
+    String str = userInput();
     String[] inputArr = str.split("( |,)+");
-
-    // Invalid lengths and flag syntax
-    boolean invalidInput = inputArr.length < 2 ||
-                           inputArr.length > 3 ||
-                           inputArr.length == 3 && !inputArr[0].equalsIgnoreCase("flag");
+    boolean invalidInput = validateInput(inputArr);
     
     // Empty String[] signifies invalid input
     return invalidInput
@@ -70,16 +84,18 @@ public class Game {
    * @param b Ref. to current board, such that we can open/flag tiles on it
    */
   public void turn(Board b) {
-    String[] inputArr = this.formatInput();
+    String[] inputArr = this.getUserCommand();
     boolean flag = this.getFlag(inputArr);
     int[] coords = this.getCoords(inputArr, flag);
-    Tile tile = b.board[coords[1]][coords[0]];
 
     // Invalid: avoid start over from user input
     if (coords.length == 0 || inputArr.length == 0) {
       System.err.println("INVALID INPUT");
       return;
     }
+    
+    // TODO Handle exception for index out of bounds
+    Tile tile = b.board[coords[1]][coords[0]];
 
     if (flag) {
       tile.toggleFlag();
