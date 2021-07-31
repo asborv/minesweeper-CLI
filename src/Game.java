@@ -95,6 +95,12 @@ public class Game {
         }
       } else if (adjacentBombs == 9) {
         this.gameOver = true;
+
+        // Open all Tiles and Bombs (to print board when gameOver)
+        // link https://stackoverflow.com/questions/22601036/stream-from-two-dimensional-array-in-java
+        Arrays.stream(b.board)
+          .flatMap(Arrays::stream)
+          .forEach(Tile::open);
       }
     }
 
@@ -111,7 +117,6 @@ public class Game {
     }
 
     game.scanner.close();
-    // TODO Print entire board open
     System.out.println("Game over");
   }
 }

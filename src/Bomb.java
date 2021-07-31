@@ -11,6 +11,6 @@ public class Bomb extends Tile {
   public String toString() {
     return this.isFlagged
       ? "F"
-      : " ";
+      : (this.isOpen ? "B" : " ");
   }
 }
