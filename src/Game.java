@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public class Game {
   boolean gameOver = false;
+  boolean didWin = false;
   Scanner scanner = new Scanner(System.in);
 
   /**
@@ -81,7 +82,28 @@ public class Game {
     }
   }
 
-  // TODO Check win criteria
+  /**
+   * Checks if all non {@code Bomb}s are open,
+   * and all {@code Bomb}s are flagged (win criteria)
+   * @param b Ref. to current {@code Board}, such that {@codeTile}s can be accessed.
+   * @return {@code true} if win criteria are met, {@code false} otherwise.
+   */
+  public boolean checkWin(Board b) {
+    // Flatten 2D board -> filter away Bombs -> check if all are open
+    boolean allTilesOpen = Arrays.stream(b.board)
+      .flatMap(Arrays::stream)
+      .filter(t -> !(t instanceof Bomb))
+      .allMatch(t -> t.isOpen);
+
+    // Flatten 2D board -> filter to only Bombs -> check if all are flagged
+    boolean allBombsFlagged = Arrays.stream(b.board)
+      .flatMap(Arrays::stream)
+      .filter(t -> t instanceof Bomb)
+      .allMatch(bomb -> bomb.isFlagged);
+    
+    return allTilesOpen && allBombsFlagged;  
+  }
+
   /**
    * Complete turn: user input -> validation -> action 
    * @param b Ref. to current board, such that we can open/flag tiles on it
@@ -124,11 +146,13 @@ public class Game {
       }
 
       System.out.println(b);
+      this.didWin = this.checkWin(b);
+
     } catch (Exception e) {
       // Handle selected tile outside board
       System.out.println(String.format("Input outside board. Max x is %d and y is %d.", b.width - 1, b.height - 1));
       return;
-    } 
+    }
   }
 
   // TODO Board constructor from args
@@ -136,11 +160,14 @@ public class Game {
     Board b = new Board(5, 5);
     Game game = new Game();
 
-    while (!game.gameOver) {
+    while (!game.gameOver && !game.didWin) {
       game.turn(b);
     }
 
+    System.out.println(game.didWin
+      ? "You win!"
+      : "Game over...");
+
     game.scanner.close();
-    System.out.println("Game over");
   }
 }
