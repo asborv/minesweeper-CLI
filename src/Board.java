@@ -32,23 +32,23 @@ public class Board {
     // Initialize tiles with random value for isBomb
     for (int y=0; y<this.height; y++) {
       for (int x=0; x<this.width; x++) {
-        int[] coords = {x, y};
+        Point p = new Point(x, y);
 
         this.board[y][x] = bombMap[y][x]
-          ? new Bomb(coords)
-          : new Tile(coords, this.getAdjacentBombs(coords));
+          ? new Bomb()
+          : new Tile(this.getAdjacentBombs(p));
       }
     } 
   }
 
-  public int[][] getAdjacentCoords(int[] coords) {
+  public int[][] getAdjacentCoords(Point p) {
     ArrayList<int[]> adjacents = new ArrayList<int[]>();
 
-    for (int y=coords[1]-1; y<=coords[1]+1; y++) {
-      for (int x=coords[0]-1; x<=coords[0]+1; x++) {
+    for (int y=p.getY()-1; y<=p.getY()+1; y++) {
+      for (int x=p.getX()-1; x<=p.getX()+1; x++) {
 
         // The opened tile should not be checked
-        if (x == coords[0] && y == coords[1]) continue;
+        if (x == p.getX() && y == p.getY()) continue;
         
         // Adds all adjacents
         // Throws where Tile outside board
@@ -64,10 +64,10 @@ public class Board {
     return adjacents.toArray(int[][]::new);
   }
   
-  public int getAdjacentBombs(int[] coords) {
+  public int getAdjacentBombs(Point p) {
     int nBombs = 0;
 
-    for (int[] adjacentCoords : this.getAdjacentCoords(coords)) {
+    for (int[] adjacentCoords : this.getAdjacentCoords(p)) {
       if (this.bombMap[adjacentCoords[1]][adjacentCoords[0]]) nBombs++;
     }
 
