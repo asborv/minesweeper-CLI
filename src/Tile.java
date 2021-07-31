@@ -4,11 +4,9 @@ public class Tile {
   public int adjacentBombs;
   public boolean isFlagged;
   public boolean isOpen;
-  public int[] coords;
 
-  public Tile(int[] coords, int adjacentBombs) {
+  public Tile(int adjacentBombs) {
     this.adjacentBombs = adjacentBombs;
-    this.coords = coords;
     this.isFlagged = false;
     this.isOpen = false;
   }
