@@ -2,9 +2,10 @@ package src;
 
 public class Bomb extends Tile {
 
-  Bomb(int[] coords) {
-    // Bomb has special case for adjacentBombs
-    super(coords, 9);
+  Bomb() {
+    // Bomb does not use adjacentBombs
+    // 9 to avoid accidental Tile-functionality
+    super(9);
   }
 
   @Override

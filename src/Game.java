@@ -6,24 +6,38 @@ public class Game {
   boolean gameOver = false;
   Scanner scanner = new Scanner(System.in);
 
-  // TODO Abstract to several functions, each to do ONE thing
-  // TODO Exception handling on malformed inputs
   /**
-   * Prompt, validate and format user input
-   * @return Array of user commands OR empty array for invalid input
+   * Prompt user for input
+   * @return User input as {@code String}
    */
-  public String[] formatInput() {
-    // Propmpt
+  public String userInput() {
     System.out.print(">>> ");
     String str = this.scanner.nextLine();
-    
-    // Input string to array by spaces & commas
-    String[] inputArr = str.split("( |,)+");
 
+    return str;
+  }
+
+  /**
+   * Check if input length and flag syntax is valid
+   * @param inputArr User input split to substrings
+   * @return {@code true} if input is invalid, otherwise {@code false}
+   */
+  public boolean validateInput(String[] inputArr) {
     // Invalid lengths and flag syntax
-    boolean invalidInput = inputArr.length < 2 ||
-                           inputArr.length > 3 ||
-                           inputArr.length == 3 && !inputArr[0].equalsIgnoreCase("flag");
+    return  inputArr.length < 2 ||
+            inputArr.length > 3 ||
+            inputArr.length == 3 && !inputArr[0].equalsIgnoreCase("flag");
+  }
+
+  /**
+   * Prompt, validate and format user input
+   * @return {@code Array} of user commands OR empty rray for invalid input
+   */
+  public String[] getUserCommand() {
+    
+    String str = userInput();
+    String[] inputArr = str.split("( |,)+");
+    boolean invalidInput = validateInput(inputArr);
     
     // Empty String[] signifies invalid input
     return invalidInput
@@ -45,9 +59,9 @@ public class Game {
    * Validates and casts string coordinates to ints
    * @param inputArr Formatted user input
    * @param flag Should tile be flagged
-   * @return Array of int coordinates OR empty array for invalid input
+   * @return Array of int coordinates OR empty {@code Array} for invalid input
    */
-  public int[] getCoords(String[] inputArr, boolean flag) {
+  public Point getCoords(String[] inputArr, boolean flag) {
     try {
       // Cut off first element if flag
       String[] strCoords = flag
@@ -55,12 +69,15 @@ public class Game {
         : inputArr;
       
       // Cast String[] to int[]
-      return Arrays.stream(strCoords)
+      int[] coordArr = Arrays.stream(strCoords)
         .mapToInt(Integer::parseInt)
         .toArray();
+
+      return new Point(coordArr);
+
     } catch (Exception e) {
-      // Empty Array signifies invalid input
-      return new int[] {};
+      // Non existent point signifies invalid input
+      return new Point();
     }
   }
 
@@ -70,41 +87,48 @@ public class Game {
    * @param b Ref. to current board, such that we can open/flag tiles on it
    */
   public void turn(Board b) {
-    String[] inputArr = this.formatInput();
+    String[] inputArr = this.getUserCommand();
     boolean flag = this.getFlag(inputArr);
-    int[] coords = this.getCoords(inputArr, flag);
-    Tile tile = b.board[coords[1]][coords[0]];
+    Point p = this.getCoords(inputArr, flag);
 
     // Invalid: avoid start over from user input
-    if (coords.length == 0 || inputArr.length == 0) {
-      System.err.println("INVALID INPUT");
+    if (p.getX() == null || p.getY() == null) {
+      System.err.println("\nINVALID INPUT\nWrite two coordinates, separated by space or comma.\nPrepend with 'flag' if you want to flag the tile.\n");
       return;
     }
+    
+    // try/catch to handle x and y values outside board
+    try {
+      Tile tile = b.board[p.getY()][p.getX()];
 
-    if (flag) {
-      tile.toggleFlag();
-    } else {
-      // 9 is a special case for bomb: see Bomb constructor
-      int adjacentBombs = tile.open();
+      if (flag) {
+        tile.toggleFlag();
+      } else {
+        int adjacentBombs = tile.open();
 
-      // Opens all adjacent when none are bombs
-      // NOTE: Does not propagate to adjacent 0-tiles
-      if (adjacentBombs == 0) {
-        for (int[] safeCoords : b.getAdjacentCoords(coords)) {
-          b.board[safeCoords[1]][safeCoords[0]].open();
+        // Opens all adjacent when none are bombs
+        // TODO: Does not propagate to adjacent 0-tiles
+        if (adjacentBombs == 0) {
+          for (int[] safeCoords : b.getAdjacentCoords(p)) {
+            b.board[safeCoords[1]][safeCoords[0]].open();
+          }
+        } else if (tile instanceof Bomb) {
+          this.gameOver = true;
+
+          // Open all Tiles and Bombs (to print board when gameOver)
+          // link https://stackoverflow.com/questions/22601036/stream-from-two-dimensional-array-in-java
+          Arrays.stream(b.board)
+            .flatMap(Arrays::stream)
+            .forEach(Tile::open);
         }
-      } else if (adjacentBombs == 9) {
-        this.gameOver = true;
-
-        // Open all Tiles and Bombs (to print board when gameOver)
-        // link https://stackoverflow.com/questions/22601036/stream-from-two-dimensional-array-in-java
-        Arrays.stream(b.board)
-          .flatMap(Arrays::stream)
-          .forEach(Tile::open);
       }
-    }
 
-    System.out.println(b);
+      System.out.println(b);
+    } catch (Exception e) {
+      // Handle selected tile outside board
+      System.out.println(String.format("Input outside board. Max x is %d and y is %d.", b.width - 1, b.height - 1));
+      return;
+    } 
   }
 
   // TODO Board constructor from args
