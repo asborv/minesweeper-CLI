@@ -1,7 +1,7 @@
 package src;
 
 public class Tile {
-  public int adjacentBombs = 0;
+  public int adjacentBombs;
   public boolean isFlagged;
   public boolean isOpen;
   public int[] coords;

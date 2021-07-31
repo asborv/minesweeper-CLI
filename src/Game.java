@@ -93,7 +93,7 @@ public class Game {
         for (int[] safeCoords : b.getAdjacentCoords(coords)) {
           b.board[safeCoords[1]][safeCoords[0]].open();
         }
-      } else if (adjacentBombs == 9) {
+      } else if (tile instanceof Bomb) {
         this.gameOver = true;
 
         // Open all Tiles and Bombs (to print board when gameOver)

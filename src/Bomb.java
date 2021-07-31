@@ -3,7 +3,8 @@ package src;
 public class Bomb extends Tile {
 
   Bomb(int[] coords) {
-    // Bomb has special case for adjacentBombs
+    // Bomb does not use adjacentBombs
+    // 9 to avoid accidental Tile-functionality
     super(coords, 9);
   }
 
