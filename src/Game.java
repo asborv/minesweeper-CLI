@@ -121,7 +121,7 @@ public class Game {
     
     // try/catch to handle x and y values outside board
     try {
-      Tile tile = b.board[p.getY()][p.getX()];
+      Tile tile = b.tileAt(p);
 
       if (flag) {
         tile.toggleFlag();
@@ -131,8 +131,8 @@ public class Game {
         // Opens all adjacent when none are bombs
         // TODO: Does not propagate to adjacent 0-tiles
         if (adjacentBombs == 0) {
-          for (Point safeCoords : b.getAdjacentCoords(p)) {
-            b.board[safeCoords.getY()][safeCoords.getX()].open();
+          for (Point safeCoord : b.getAdjacentCoords(p)) {
+            b.tileAt(safeCoord).open();
           }
         } else if (tile instanceof Bomb) {
           this.gameOver = true;

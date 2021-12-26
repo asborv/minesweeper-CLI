@@ -41,6 +41,10 @@ public class Board {
     } 
   }
 
+  Tile tileAt(Point p) {
+    return this.board[p.getY()][p.getX()];
+  }
+
   public Point[] getAdjacentCoords(Point p) {
     ArrayList<Point> adjacents = new ArrayList<Point>();
 
