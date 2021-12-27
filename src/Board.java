@@ -15,7 +15,7 @@ public class Board {
     
     // Complete bombMap before Tile initialization such that getAdjacentBombs works correctly
     
-    // width has no effect as rows as reassigned later - left for readibility
+    // width has no effect as rows as reassigned later - left for readability
     this.bombMap = new Boolean[height][width];
     Random rd = new Random();
     DoubleFunction<Boolean> bombIfGreater = x -> x > .9;
@@ -57,8 +57,8 @@ public class Board {
         // Adds all adjacents
         // Throws where Tile outside board
         try {
-          Tile validTile = this.board[y][x];
-          adjacents.add(new Point(x, y));
+          Tile validTile = this.tileAt(p);
+          adjacents.add(p);
         } catch (ArrayIndexOutOfBoundsException e) {
           // Left empty; index out of bounds is a tile outside the board
         }
@@ -71,8 +71,8 @@ public class Board {
   public int getAdjacentBombs(Point p) {
     int nBombs = 0;
 
-    for (Point adjacentCoords : this.getAdjacentCoords(p)) {
-      if (this.bombMap[adjacentCoords.getY()][adjacentCoords.getX()]) nBombs++;
+    for (Point adjacentCoord : this.getAdjacentCoords(p)) {
+      if (this.tileAt(adjacentCoord) instanceof Bomb) nBombs++;
     }
 
     return nBombs;
