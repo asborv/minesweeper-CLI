@@ -1,4 +1,6 @@
 package src;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Arrays;
 
@@ -126,22 +128,35 @@ public class Game {
       if (flag) {
         tile.toggleFlag();
       } else {
-        int adjacentBombs = tile.open();
-
-        // Opens all adjacent when none are bombs
-        // TODO: Does not propagate to adjacent 0-tiles
-        if (adjacentBombs == 0) {
-          for (Point safeCoord : b.getAdjacentCoords(p)) {
-            b.tileAt(safeCoord).open();
-          }
-        } else if (tile instanceof Bomb) {
-          this.gameOver = true;
-
+        if (tile instanceof Bomb) {
+          gameOver = true;
           // Open all Tiles and Bombs (to print board when gameOver)
           // link https://stackoverflow.com/questions/22601036/stream-from-two-dimensional-array-in-java
           Arrays.stream(b.board)
-            .flatMap(Arrays::stream)
-            .forEach(Tile::open);
+                  .flatMap(Arrays::stream)
+                  .forEach(Tile::open);
+        }
+
+        // Queue of 0-Tiles to open automatically
+        ArrayList<Point> toBeOpened = new ArrayList<>();
+        toBeOpened.add(p);
+
+        // While items in queue: open first and extend queue if 0-tile
+        while (toBeOpened.size() > 0) {
+          p = toBeOpened.remove(0);
+          tile = b.tileAt(p);
+          int adjacentBombs = tile.open();
+
+          // Add all adjacents of current Tile if 0 adjacent Bombs
+          if (adjacentBombs == 0) {
+            // All adjacent coordinates to 0-Tile
+            Point[] safeCoords = Arrays.stream(b.getAdjacentCoords(p))
+              .filter(point -> !b.tileAt(point).isOpen)
+              .toArray(Point[]::new);
+
+            // Extend queue
+            toBeOpened.addAll(Arrays.asList(safeCoords));
+          }
         }
       }
 
