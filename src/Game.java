@@ -1,8 +1,8 @@
 package src;
-import java.lang.reflect.Array;
+
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class Game {
   boolean gameOver = false;
@@ -15,9 +15,7 @@ public class Game {
    */
   public String userInput() {
     System.out.print(">>> ");
-    String str = this.scanner.nextLine();
-
-    return str;
+    return  this.scanner.nextLine();
   }
 
   /**
@@ -34,12 +32,12 @@ public class Game {
 
   /**
    * Prompt, validate and format user input
-   * @return {@code Array} of user commands OR empty rray for invalid input
+   * @return {@code Array} of user commands OR empty array for invalid input
    */
   public String[] getUserCommand() {
     
     String str = userInput();
-    String[] inputArr = str.split("( |,)+");
+    String[] inputArr = str.split("([ ,])+");
     boolean invalidInput = validateInput(inputArr);
     
     // Empty String[] signifies invalid input
@@ -55,7 +53,7 @@ public class Game {
    */
   public boolean getFlag(String[] inputArr) {
     return inputArr.length == 3 &&
-           inputArr[0].toLowerCase().equals("flag");
+           inputArr[0].equalsIgnoreCase("flag");
   }
 
   /**
@@ -87,7 +85,7 @@ public class Game {
   /**
    * Checks if all non {@code Bomb}s are open,
    * and all {@code Bomb}s are flagged (win criteria)
-   * @param b Ref. to current {@code Board}, such that {@codeTile}s can be accessed.
+   * @param b Ref. to current {@code Board}, such that {@code Tile}s can be accessed.
    * @return {@code true} if win criteria are met, {@code false} otherwise.
    */
   public boolean checkWin(Board b) {
@@ -165,8 +163,7 @@ public class Game {
 
     } catch (Exception e) {
       // Handle selected tile outside board
-      System.out.println(String.format("Input outside board. Max x is %d and y is %d.", b.width - 1, b.height - 1));
-      return;
+      System.out.printf("Input outside board. Max x is %d and y is %d.%n", b.width - 1, b.height - 1);
     }
   }
 
